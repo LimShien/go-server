@@ -9,16 +9,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	database "github.com/LimShien/go-server/database"
 	sw "github.com/LimShien/go-server/go"
 )
 
 func main() {
 	log.Printf("Server started")
-	db.connectDB()
+	// Call the conectDB function from db.go
+	db, err := database.ConnectDB()
+	if err != nil {
+		fmt.Println("Error connecting to the database:", err)
+		return
+	}
+	defer database.CloseDB(db)
 
+	// Create tables
+	err = database.CreateTable(db)
+	if err != nil {
+		fmt.Println("Error creating tables:", err)
+		return
+	}
 	router := sw.NewRouter()
 
 	log.Fatal(http.ListenAndServe(":8080", router))
