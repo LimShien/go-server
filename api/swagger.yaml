@@ -1,0 +1,627 @@
+openapi: 3.0.3
+info:
+  title: Appointment Scheduling Service- OpenAPI 3.0
+  description: The specification contains API contractrs for appointment scheduling
+    service
+  contact:
+    name: Lim Shien Han
+  version: 0.0.1
+servers:
+- url: http://localhost:8080/v1
+tags:
+- name: Appointment service
+  description: APIs to manage appointments/scheduling
+- name: Customer management
+  description: APIs to manage customer records
+- name: Item records
+  description: APIs to manage items
+paths:
+  /appointment/{id}:
+    get:
+      tags:
+      - Appointment service
+      summary: Get single appointment by ID
+      description: single appointment is returned
+      operationId: getAppointmentById
+      parameters:
+      - name: id
+        in: path
+        description: Appointment ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    put:
+      tags:
+      - Appointment service
+      summary: Update Appointment by ID
+      description: Update an appointment
+      operationId: UpdateAppointmentById
+      parameters:
+      - name: id
+        in: path
+        description: Appointment Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Content-Type
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Update appointment by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentUpdateRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    delete:
+      tags:
+      - Appointment service
+      summary: Delete Appointment by Id
+      description: Delete an appointment by ID
+      operationId: deleteAppointmentById
+      parameters:
+      - name: id
+        in: path
+        description: Appointment Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Deleted Successfully.
+        "400":
+          description: Bad Request.
+        "404":
+          description: Not Found.
+        "500":
+          description: Internal Server Error
+  /appointment:
+    get:
+      tags:
+      - Appointment service
+      summary: Get Appointments
+      description: All appointments are returned/ or based on filter (if applied)
+      operationId: getAppointments
+      parameters:
+      - name: startDate
+        in: query
+        description: Start date for filtering appointments
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: "End date for filtering appointments, single day is selected\
+          \ if end date not specified."
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: List of appointments based on the date filter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppointmentResponse'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    post:
+      tags:
+      - Appointment service
+      summary: Create an appointment
+      description: create an appointment object
+      operationId: createAppointment
+      requestBody:
+        description: Create appointment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentResponse'
+        required: true
+      responses:
+        "201":
+          description: Created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentResponse'
+        "400":
+          description: Bad Request.
+        "500":
+          description: Internal Server Error
+  /customer/{id}:
+    get:
+      tags:
+      - Customer management
+      summary: Get single customer by ID
+      description: single customer is returned
+      operationId: getCustomerById
+      parameters:
+      - name: id
+        in: path
+        description: Customer ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    put:
+      tags:
+      - Customer management
+      summary: Update Customer by ID
+      description: Update an Customer
+      operationId: UpdateCustomerById
+      parameters:
+      - name: id
+        in: path
+        description: Customer Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Content-Type
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Update Customer by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    delete:
+      tags:
+      - Customer management
+      summary: Delete Customer by ID
+      description: Delete a Customer by ID
+      operationId: deleteCustomerById
+      parameters:
+      - name: id
+        in: path
+        description: Appointment Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Deleted Successfully.
+        "400":
+          description: Bad Request.
+        "404":
+          description: Not Found.
+        "500":
+          description: Internal Server Error
+  /customer:
+    get:
+      tags:
+      - Customer management
+      summary: Get all customer
+      description: All Customer are returned
+      operationId: getCustomers
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerResponse'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    post:
+      tags:
+      - Customer management
+      summary: Create a customer
+      description: create an customer object
+      operationId: createCustomer
+      requestBody:
+        description: Create customer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerResponse'
+        required: true
+      responses:
+        "201":
+          description: Created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        "400":
+          description: Bad Request.
+        "500":
+          description: Internal Server Error
+  /item/{id}:
+    get:
+      tags:
+      - Item records
+      summary: Get single item by ID
+      description: single item is returned
+      operationId: getItemById
+      parameters:
+      - name: id
+        in: path
+        description: Customer ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    put:
+      tags:
+      - Item records
+      summary: Update Item by ID
+      description: Update an Item by ID
+      operationId: UpdateItemById
+      parameters:
+      - name: id
+        in: path
+        description: Item Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Content-Type
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Update Customer by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemResponse'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    delete:
+      tags:
+      - Item records
+      summary: Delete Item by ID
+      description: Delete a Item by Id
+      operationId: deleteItemById
+      parameters:
+      - name: id
+        in: path
+        description: Item Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Deleted Successfully.
+        "400":
+          description: Bad Request.
+        "404":
+          description: Not Found.
+        "500":
+          description: Internal Server Error
+  /Item:
+    get:
+      tags:
+      - Item records
+      summary: Get all Item
+      description: All Item are returned
+      operationId: getItems
+      responses:
+        "200":
+          description: List of Items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemResponse'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    post:
+      tags:
+      - Item records
+      summary: Create an Item
+      description: create an Item object
+      operationId: createItem
+      requestBody:
+        description: Create Item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemResponse'
+        required: true
+      responses:
+        "201":
+          description: Created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemResponse'
+        "400":
+          description: Bad Request.
+        "500":
+          description: Internal Server Error
+components:
+  schemas:
+    AppointmentResponse:
+      type: object
+      properties:
+        customerID:
+          type: object
+          description: "The customer identifier that contains name, phone number and\
+            \ history"
+        appointmentTime:
+          type: string
+          description: The starting time of the appointment.
+        appointmentItem:
+          type: string
+          description: The item for the appointment.
+        appointmentDuration:
+          type: integer
+          description: "The duration of the appointment, this is associated with the\
+            \ item, and it can  be customed. (in minutes)"
+      example:
+        appointmentItem: appointmentItem
+        appointmentTime: appointmentTime
+        customerID: {}
+        appointmentDuration: 0
+    AppointmentUpdateRequest:
+      type: object
+      properties:
+        customerName:
+          type: string
+          description: "The name of the customer, required if ID not provided"
+        customerNumber:
+          type: string
+          description: "The phone number, required if the ID not provided"
+        appointmentTime:
+          type: string
+          description: The starting time of the appointment.
+        appointmentItem:
+          type: string
+          description: The item for the appointment.
+        appointmentDuration:
+          type: integer
+          description: "The duration of the appointment, this is associated with the\
+            \ item, and it can  be customed. (in minutes)"
+    CustomerResponse:
+      type: object
+      properties:
+        customerName:
+          type: string
+          description: "The name of the customer, required if ID not provided"
+        customerNumber:
+          type: string
+          description: "The phone number, required if the ID not provided"
+        customerNote:
+          type: string
+          description: "Remarks for the customer, e.g. discounts/ requests"
+        appointmentHistory:
+          type: object
+          description: The visit history of the customer.
+      example:
+        appointmentHistory: {}
+        customerNote: customerNote
+        customerNumber: customerNumber
+        customerName: customerName
+    CustomerUpdateRequest:
+      type: object
+      properties:
+        customerName:
+          type: string
+          description: "The name of the customer, required if ID not provided"
+        customerNumber:
+          type: number
+          description: "The phone number, required if the ID not provided"
+        customerNote:
+          type: string
+          description: "Remarks for the customer, e.g. discounts/ requests"
+        appointmentHistory:
+          type: object
+          description: The visit history of the customer
+    ItemResponse:
+      type: object
+      properties:
+        itemName:
+          type: string
+          description: The name of the item
+        itemNotes:
+          type: string
+          description: The description of the item
+        itemDefaultPrice:
+          type: number
+          description: "the default price of the item, could be customised depending\
+            \ on situation"
+        itemDefaultDuration:
+          type: integer
+          description: "The default duration of the item (in minutes), could be customised\
+            \ depending on situation"
+      example:
+        itemNotes: itemNotes
+        itemName: itemName
+        itemDefaultPrice: 0.8008281904610115
+        itemDefaultDuration: 6
