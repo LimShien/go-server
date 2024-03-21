@@ -13,26 +13,98 @@ import (
 )
 
 func CreateItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	var newItem Item
+	if err := json.NewDecoder(r.Body).Decode(&newItem); err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	// Insert the new item into the database
+	result, err := db.Exec("INSERT INTO items (item_name, item_notes, item_default_price, item_default_duration) VALUES (?, ?, ?, ?)",
+		newItem.ItemName, newItem.ItemNotes, newItem.ItemDefaultPrice, newItem.ItemDefaultDuration)
+	if err != nil {
+		log.Println("Error inserting item:", err)
+		http.Error(w, "Failed to create item", http.StatusInternalServerError)
+		return
+	}
+
+	newID, err := result.LastInsertId()
+	if err != nil {
+		log.Println("Error getting last insert ID:", err)
+		http.Error(w, "Failed to create item", http.StatusInternalServerError)
+		return
+	}
+
+	newItem.ID = int(newID)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newItem)
 }
 
 func DeleteItemById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	is := mux.Vars(r)["id"]
+	deleteItemSQL := "DELETE FROM items WHERE id = ?"
+	_, err := db.Exec(deleteItemSQL, id)
+	if err != nil {
+		log.Println("Error deleting item:", err)
+	     http.Error(w, "Failed to delete item", http.StatusInternalServerError)
+	     return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
 func GetItemById(w http.ResponseWriter, r *http.Request) {
+	is := mux.Vars(r)["id"]
+	query := "SELECT id, item_name, item_notes, item_default_price, item_default_duration FROM items WHERE id = ?"
+	var item Item
+	err := db.QueryRow(query, id).Scan(&item.ID, &item.ItemName, &item.ItemNotes, &item.ItemDefaultPrice, &item.ItemDefaultDuration)
+	if err := nil{
+		log.Println("Error fetching items:", err)
+		http.Error(w, "Failed to fetch items". http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(item)
 }
 
 func GetItems(w http.ResponseWriter, r *http.Request) {
+	query := "SELECT id, item_name, item_notes, item_default_price, item_default_duration FROM items"
+	rows, err := db.Query(query)
+	if err := nil{
+		log.Println("Error fetching items:", err)
+		http.Error(w, "Failed to fetch items". http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var items []Item
+	for rows.Next() {
+		var item Item
+		err := rows.Scan(&item.ID, &item.ItemName, &item.ItemNotes, &item.ItemDefaultPrice, &item.ItemDefaultDuration)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+			continue
+		}
+		items = append(items, item)
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(items)
 }
 
 func UpdateItemById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	is := mux.Vars(r)["id"]
+	var updatedItem Item
+	if err := json.NewDecoder(r.Body).Decode(&updatedItem); err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	updateItemSQL := "UPDATE items SET item_name = ?, item_notes = ?, item_default_price = ?, item_default_duration = ? WHERE id = ?"
+	_, err := db.Exec(updateItemSQL, updatedItem.ItemName, updatedItem.ItemNotes, updatedItem.ItemDefaultPrice, updatedItem.ItemDefaultDuration, id)
+	// if err != nil {
+	if err != nil {
+		log.Println("Error updating item:", err)
+	    http.Error(w, "Failed to update item", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }

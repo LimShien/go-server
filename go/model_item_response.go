@@ -9,6 +9,7 @@
 package swagger
 
 type ItemResponse struct {
+	ID int `json:"itemId"
 	// The name of the item
 	ItemName string `json:"itemName,omitempty"`
 	// The description of the item
