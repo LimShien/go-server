@@ -7,7 +7,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func connectDB() (*sql.DB, error) {
+func ConnectDB() (*sql.DB, error) {
 	// Open a database connection
 	db, err := sql.Open("sqlite3", "sqlite.db")
 	if err != nil {
@@ -21,11 +21,10 @@ func connectDB() (*sql.DB, error) {
 	}
 
 	fmt.Println("Connected to the database")
-	createTable(db)
 	return db, nil
 }
 
-func createTable(db *sql.DB) error {
+func CreateTable(db *sql.DB) error {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS items (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +54,7 @@ func createTable(db *sql.DB) error {
 	return err
 }
 
-func closeDB(db *sql.DB) {
+func CloseDB(db *sql.DB) {
 	db.Close()
 	fmt.Println("Database connection closed")
 }
